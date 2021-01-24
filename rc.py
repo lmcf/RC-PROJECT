@@ -5,18 +5,24 @@ import configs
 # de colores, letras... 
 import style
 
+# Tiempo
+import time
+
 # Variables para saber que motod hay que activar/desactivar
 speed_front = False
 speed_back = False
 turn_right = False
 turn_left = False
+hand_brake = True
+left_amber = False
+right_amber = False
 
 # Acelerar & marcha atrás
 def speedUPDOWN_front( self, release = False ):
     global speed_front
     global speed_back
     
-    if speed_front is False and release is False:
+    if speed_front is False and release is False and hand_brake is False:
         speed_back = False
         speed_front = True
         
@@ -38,12 +44,15 @@ def speedUPDOWN_front( self, release = False ):
                       "\nSpeed back : " +
                       str( speed_back ) )
         
+    if hand_brake is True:
+        configs.debug("Freno de mano : " + str(hand_brake))
+        
         
 def speedUPDOWN_back( self, release ):
     global speed_back
     global speed_front
     
-    if speed_back is False and release is False:
+    if speed_back is False and release is False and hand_brake is False:
         speed_front = False
         speed_back = True
         
@@ -64,6 +73,10 @@ def speedUPDOWN_back( self, release ):
                       str(speed_front) +
                       "\nSpeed back : " +
                       str(speed_back))
+    
+    if hand_brake is True:
+        configs.debug("Freno de mano : " + str(hand_brake))
+        
     
     
     
@@ -99,6 +112,7 @@ def turnUPDOWN_right( self, release = False ):
 def turnUPDOWN_left( self, release = False ):
     global turn_left
     global turn_right
+    global hand_brake
     
     if turn_left is False and release is False:
         turn_right = False
@@ -122,3 +136,59 @@ def turnUPDOWN_left( self, release = False ):
                       str( turn_right ) +
                       "\nTurn_left : " +
                       str( turn_left ) )
+
+
+# Freno de mano
+def handBrake( self ):
+    global hand_brake
+    
+    if hand_brake is False:
+        hand_brake = True
+        self.lbl_brake.config( bg = style.COLOR_SUCCESS )
+        
+    elif hand_brake is True:
+        hand_brake = False;
+        self.lbl_brake.config( bg = style.COLOR_INACTIVE )
+    
+    configs.debug("Freno de mano : " + str(hand_brake))
+    
+# Intermitente izquierdo
+def leftIntermittent( self , onoff = True):
+    global left_amber
+    
+    if left_amber is False and onoff is True:
+        rightIntermittent(self , False)
+        left_amber = True
+        self.lbl_inter_left.config( bg = style.COLOR_INTERMITENTE )
+        
+    elif left_amber is True:
+        left_amber = False
+        self.lbl_inter_left.config( bg = style.COLOR_INACTIVE )
+        
+    else:
+        left_amber = False
+        self.lbl_inter_left.config( bg = style.COLOR_INACTIVE )
+    
+    configs.debug("Intermitente izquierdo : " + str(left_amber))
+  
+  # Intermitente derecho
+def rightIntermittent( self , onoff = True):
+    global right_amber
+    
+    if right_amber is False and onoff is True:
+        leftIntermittent(self , False)
+        right_amber = True
+        self.lbl_inter_right.config( bg = style.COLOR_INTERMITENTE )
+        
+    elif right_amber is True:
+        right_amber = False
+        self.lbl_inter_right.config( bg = style.COLOR_INACTIVE )
+        
+    else:
+        right_amber = False
+        self.lbl_inter_right.config( bg = style.COLOR_INACTIVE )
+    
+    configs.debug("Intermitente derecho : " + str(right_amber))
+    
+    
+    

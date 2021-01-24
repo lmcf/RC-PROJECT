@@ -27,7 +27,7 @@ def App():
     global  root
     # Instancioms la clase tkinter
     root = Tk()
-    
+
     # Construimos la ventana usando una clase con toda la información
     deadlight = GUI(root)
     
@@ -40,7 +40,7 @@ class GUI:
     def __init__( self, deadlight=None ):
         
         # Configuramos dimension de la ventana, posición, background color y titulo
-        deadlight.geometry( "800x600+530+213" )
+        deadlight.geometry( "500x185+265+105" )
         deadlight.configure( background = style.BG_COLOR )
         deadlight.title( "RC Control" )
         
@@ -71,18 +71,33 @@ class GUI:
         # Configuramos los labels
         # Donde en función de lo que este haciendo el RC se pondra ver o no .
         # Es como una panel de control en el que ves lo que se activa y lo que se inactiva del RC
-        self.lbl_up = Label( root , text ="ACELERAR" , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
-        self.lbl_up.pack( padx = 5 , pady = 10 , ipadx = 10 , ipady = 10 )
+        self.lbl_inter_left = Label( root , text =" < " , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_SQUARE_WIDTH_HEIGHT )
+        self.lbl_inter_left.grid(pady = 10 , padx = 5, row = 2 , column = 2 )
         
+        self.lbl_up = Label( root , text ="ACELERAR" , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
+        self.lbl_up.grid(pady = 10 , padx = 5, row = 2 , column = 3 )
+        
+        self.lbl_inter_right = Label( root , text =" > " , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_SQUARE_WIDTH_HEIGHT )
+        self.lbl_inter_right.grid(pady = 10 , padx = 5, row = 2 , column = 4 )
+
         self.lbl_back = Label( root , text = "MARCHA ATRÁS" , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
-        self.lbl_back.pack( padx = 5 , pady = 10 , ipadx = 10 , ipady = 10 )
+        self.lbl_back.grid(pady = 10 , padx = 5, row = 4 , column = 3)
+        
+        self.lbl_brake = Label( root , text = "BRAKE" , bg = style.COLOR_SUCCESS , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
+        self.lbl_brake.grid(pady = 10 , padx = 5, row = 3 , column = 3)
          
         self.lbl_right = Label( root , text = "GIRO DERECHA" , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
-        self.lbl_right.pack( padx = 5 , pady = 10 , ipadx = 10 , ipady = 10 )
+        self.lbl_right.grid(pady = 10 , padx = 5, row = 3 , column = 4)
         
         self.lbl_left = Label( root , text = "GIRO IZQUIERDA" , bg = style.COLOR_INACTIVE , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
-        self.lbl_left.pack( padx = 5 , pady = 10 , ipadx = 10 , ipady = 10 )
+        self.lbl_left.grid(pady = 10 , padx = 5, row = 3 , column = 2)
         
+        self.lbl_lights = Label( root , text = "LIGHTS" , bg = style.COLOR_DISABLED , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
+        self.lbl_lights.grid(pady = 10 , padx = 5, row = 4 , column = 2)
+        
+        self.lbl_brake_lights = Label( root , text = "BRAKE LIGHTS" , bg = style.COLOR_DISABLED , fg = style.COLOR_BLACK , font = style.FONT_STYLE_TXT , width = style.LBL_FIXED_WIDTH )
+        self.lbl_brake_lights.grid(pady = 10 , padx = 5, row = 4 , column = 4)
+
         # Botón de Salir
         self.btn_exit = ttk.Button( root ,
                                   text = 'Exit' ,
@@ -90,7 +105,7 @@ class GUI:
                                   style = 'exitButton.TButton' )
         
         # Estilo botón salir
-        self.btn_exit.pack( side = BOTTOM, padx = 5 , pady = 5 , ipadx = 10 , ipady = 10 )
+        self.btn_exit.grid(pady = 10 , padx = 5, row = 5 , column = 3)
     
         # Detecta que tecla se pulsa y se suelta
         # En función de lo que haga activar o desactivara motores
@@ -121,6 +136,15 @@ class GUI:
             
         elif key == 'Left':
             rc.turnUPDOWN_left( self, release )
+            
+        elif key == 'space':
+            rc.handBrake( self );
+            
+        elif key == 'q':
+            rc.leftIntermittent( self )
+        
+        elif key == 'e':
+            rc.rightIntermittent( self )
     
     def move_rc_off(self, event):
         # Recogemos la telca pulsada
@@ -145,6 +169,7 @@ class GUI:
             
         elif key == 'Left':
             rc.turnUPDOWN_left( self, release )
+            
 
 
 if __name__ == '__main__':
