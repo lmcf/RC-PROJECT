@@ -1,5 +1,5 @@
 # Funciones globales
-import configs
+from configs import debug
 
 # Este archivo contiene constantes que ajudan a cambiar de golpe los estilos
 # de colores, letras... 
@@ -7,6 +7,8 @@ import style
 
 # Tiempo
 import time
+
+from rc_control import Rccontrol
 
 # Variables para saber que motod hay que activar/desactivar
 speed_front = False
@@ -17,8 +19,33 @@ hand_brake = True
 left_amber = False
 right_amber = False
 
+control = Rccontrol()
+
 # Acelerar & marcha atrás
 def speedUPDOWN_front( self, release = False ):
+    """ Función encargada de acelerar y dar marcha atrás.
+
+        | Hand Brake | Speed up | Speed down |
+        |------------|----------|------------|
+        |    True    |  False   |   False    |
+        |    False   |  False   |   False    |
+        |    False   |  True    |   False    |
+        |    False   |  False   |   True     |
+        
+        Parameters
+        ----------
+        :param release : Boolean
+            Variable que nos ajuda al control de cuando ha de acelerar o no.
+            Esta sirve para cuando presionas el acelerador y antes de soltar , das marcha atrás,
+            y despues sueltas el acelerador, si no fuera por esta variable aceleraria.
+            Cuando no deberia hacer nada
+    
+        Returns
+        -------
+        :return: Boolean
+            Devuelve True si la acción tuvo éxito
+                
+    """
     global speed_front
     global speed_back
     
@@ -29,7 +56,7 @@ def speedUPDOWN_front( self, release = False ):
         self.lbl_back.config( bg = style.COLOR_INACTIVE )
         self.lbl_up.config( bg = style.COLOR_SUCCESS )
         
-        configs.debug( "Acelerando...\nSpeed front : " +
+        debug( "Acelerando...\nSpeed front : " +
                       str( speed_front ) +
                       "\nSpeed back : " +
                       str( speed_back ) )
@@ -39,16 +66,21 @@ def speedUPDOWN_front( self, release = False ):
         
         self.lbl_up.config( bg = style.COLOR_INACTIVE )
         
-        configs.debug( "Desacelerando...\nSpeed front : " +
+        debug( "Desacelerando...\nSpeed front : " +
                       str( speed_front ) +
                       "\nSpeed back : " +
                       str( speed_back ) )
         
     if hand_brake is True:
-        configs.debug("Freno de mano : " + str(hand_brake))
+        debug("Freno de mano : " + str(hand_brake))
         
         
 def speedUPDOWN_back( self, release ):
+    """ inits Spamfilter with training data
+        
+    :param training_dir: path of training directory with subdirectories
+    '/ham' and '/spam'
+    """
     global speed_back
     global speed_front
     
@@ -59,7 +91,7 @@ def speedUPDOWN_back( self, release ):
         self.lbl_up.config( bg = style.COLOR_INACTIVE )
         self.lbl_back.config( bg = style.COLOR_SUCCESS )
         
-        configs.debug("Acelerando marcha atrás...\nSpeed front : " +
+        debug("Acelerando marcha atrás...\nSpeed front : " +
                       str(speed_front) +
                       "\nSpeed back : " +
                       str(speed_back))
@@ -69,13 +101,13 @@ def speedUPDOWN_back( self, release ):
         
         self.lbl_back.config( bg = style.COLOR_INACTIVE )
         
-        configs.debug("Desacelerando marcha atrás...\nSpeed front : " +
+        debug("Desacelerando marcha atrás...\nSpeed front : " +
                       str(speed_front) +
                       "\nSpeed back : " +
                       str(speed_back))
     
     if hand_brake is True:
-        configs.debug("Freno de mano : " + str(hand_brake))
+        debug("Freno de mano : " + str(hand_brake))
         
     
     
@@ -92,10 +124,12 @@ def turnUPDOWN_right( self, release = False ):
         self.lbl_left.config( bg = style.COLOR_INACTIVE )
         self.lbl_right.config( bg = style.COLOR_SUCCESS )
         
-        configs.debug( "Girando derecha...\nTurn_right : " +
+        debug( "Girando derecha...\nTurn_right : " +
                       str( turn_right ) +
                       "\nTurn_left : " +
                       str( turn_left ) )
+        
+        control.servoControl(10)
         
     elif turn_right is True and release is True:
         turn_left = False
@@ -103,10 +137,12 @@ def turnUPDOWN_right( self, release = False ):
         
         self.lbl_right.config( bg = style.COLOR_INACTIVE )
         
-        configs.debug( "Recto...\nTurn_right : " +
+        debug( "Recto...\nTurn_right : " +
                       str( turn_right ) +
                       "\nTurn_left : " +
                       str( turn_left ) )
+        
+        control.servoControl()
 
 # Girar izquierda
 def turnUPDOWN_left( self, release = False ):
@@ -121,10 +157,12 @@ def turnUPDOWN_left( self, release = False ):
         self.lbl_right.config( bg = style.COLOR_INACTIVE )
         self.lbl_left.config( bg = style.COLOR_SUCCESS )
                 
-        configs.debug("Girando izquierda...\nTurn_right : " +
+        debug("Girando izquierda...\nTurn_right : " +
                       str( turn_right ) +
                       "\nTurn_left : " +
                       str( turn_left ) )
+        
+        control.servoControl(5)
         
     elif turn_left is True and release is True:
         turn_right = False
@@ -132,10 +170,12 @@ def turnUPDOWN_left( self, release = False ):
         
         self.lbl_left.config( bg = style.COLOR_INACTIVE )
         
-        configs.debug("Recto...\nTurn_right : " +
+        debug("Recto...\nTurn_right : " +
                       str( turn_right ) +
                       "\nTurn_left : " +
                       str( turn_left ) )
+        
+        control.servoControl()
 
 
 # Freno de mano
@@ -150,26 +190,28 @@ def handBrake( self ):
         hand_brake = False;
         self.lbl_brake.config( bg = style.COLOR_INACTIVE )
     
-    configs.debug("Freno de mano : " + str(hand_brake))
+    debug("Freno de mano : " + str(hand_brake))
     
 # Intermitente izquierdo
 def leftIntermittent( self , onoff = True):
     global left_amber
-    
+        
     if left_amber is False and onoff is True:
         rightIntermittent(self , False)
         left_amber = True
+        #control.leftIntermittent()
         self.lbl_inter_left.config( bg = style.COLOR_INTERMITENTE )
         
     elif left_amber is True:
         left_amber = False
+        #control.leftIntermittent(False)
         self.lbl_inter_left.config( bg = style.COLOR_INACTIVE )
         
     else:
         left_amber = False
         self.lbl_inter_left.config( bg = style.COLOR_INACTIVE )
     
-    configs.debug("Intermitente izquierdo : " + str(left_amber))
+    debug("Intermitente izquierdo : " + str(left_amber))
   
   # Intermitente derecho
 def rightIntermittent( self , onoff = True):
@@ -188,7 +230,7 @@ def rightIntermittent( self , onoff = True):
         right_amber = False
         self.lbl_inter_right.config( bg = style.COLOR_INACTIVE )
     
-    configs.debug("Intermitente derecho : " + str(right_amber))
+    debug("Intermitente derecho : " + str(right_amber))
     
     
     
